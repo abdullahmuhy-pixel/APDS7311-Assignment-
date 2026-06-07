@@ -1,0 +1,32 @@
+version: 2.1
+
+jobs:
+  build-and-scan:
+    docker:
+      - image: cimg/node:18.0
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run unit tests
+          command: npm test --passWithNoTests
+      - run:
+          name: SonarQube Scan
+          command: |
+            npx sonar-scanner \
+              -Dsonar.projectKey=apds7311-banking \
+              -Dsonar.projectName="APDS7311 Banking Portal" \
+              -Dsonar.sources=. \
+              -Dsonar.exclusions=node_modules/**,build/** \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.login=$SONAR_TOKEN
+
+workflows:
+  devsecops:
+    jobs:
+      - build-and-scan:
+          filters:
+            branches:
+              only: main
