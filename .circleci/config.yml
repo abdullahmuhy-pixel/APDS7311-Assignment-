@@ -17,14 +17,14 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
           cache-path: ~/project/node_modules
-          override-ci-command: npm ci
+          override-ci-command: npm install
 
       # ── 3. Install backend dependencies ──────────────────────────────────────
       - run:
           name: Install backend dependencies
           command: |
             cd backend
-            npm ci
+            npm install
 
       # ── 4. Lint (ESLint) ─────────────────────────────────────────────────────
       - run:
@@ -69,7 +69,7 @@ jobs:
               -Dsonar.projectKey=apds7311-banking \
               -Dsonar.projectName="APDS7311 Banking Portal" \
               -Dsonar.projectVersion=1.0 \
-              -Dsonar.sources=src,backend \
+              -Dsonar.sources=. \
               -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/*.test.js,**/*.spec.js \
               -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
               -Dsonar.host.url=$SONAR_HOST_URL \
@@ -83,3 +83,4 @@ workflows:
           filters:
             branches:
               only: main
+              
