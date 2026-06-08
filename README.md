@@ -1,6 +1,6 @@
 # employee-portal — APDS7311/w Task 3
 
-International Banking Payments Portal — Employee Portal
+International-Banking Payments Portal — Employee Portal
 Built with React + Vite (frontend) and Node.js + Express (backend)
 
 ## Employee Login Credentials (Demo)
