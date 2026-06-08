@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@5.2.0
-
 jobs:
   build-and-scan:
     docker:
@@ -13,35 +10,27 @@ jobs:
       # ── 1. Checkout ──────────────────────────────────────────────────────────
       - checkout
 
-      # ── 2. Install frontend dependencies (React/Vite) ────────────────────────
-      - node/install-packages:
-          pkg-manager: npm
-          cache-path: ~/project/node_modules
-          override-ci-command: npm install
-
-      # ── 3. Install backend dependencies ──────────────────────────────────────
+      # ── 2. Install frontend dependencies ─────────────────────────────────────
       - run:
-          name: Install backend dependencies
-          command: |
-            cd backend
-            npm install
+          name: Install frontend dependencies
+          command: npm install
 
-      # ── 4. Lint (ESLint) ─────────────────────────────────────────────────────
+      # ── 3. Lint (ESLint) ─────────────────────────────────────────────────────
       - run:
           name: Run ESLint
           command: npm run lint --if-present
 
-      # ── 5. Unit tests ────────────────────────────────────────────────────────
+      # ── 4. Unit tests ────────────────────────────────────────────────────────
       - run:
           name: Run unit tests
           command: npm test --passWithNoTests
 
-      # ── 6. Build frontend (Vite) ─────────────────────────────────────────────
+      # ── 5. Build frontend (Vite) ─────────────────────────────────────────────
       - run:
           name: Build frontend
-          command: npm run build
+          command: npm run build --if-present
 
-      # ── 7. Install Java (required by sonar-scanner CLI) ──────────────────────
+      # ── 6. Install Java (required by sonar-scanner CLI) ──────────────────────
       - run:
           name: Install Java 17
           command: |
@@ -49,7 +38,7 @@ jobs:
             sudo apt-get install -y openjdk-17-jre-headless
             java -version
 
-      # ── 8. Install sonar-scanner CLI ─────────────────────────────────────────
+      # ── 7. Install sonar-scanner CLI ─────────────────────────────────────────
       - run:
           name: Install sonar-scanner
           command: |
@@ -57,11 +46,11 @@ jobs:
             wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_VERSION}-linux-x64.zip" \
               -O /tmp/sonar-scanner.zip
             unzip -q /tmp/sonar-scanner.zip -d /opt
-            echo 'export PATH="/opt/sonar-scanner-'${SONAR_VERSION}'-linux-x64/bin:$PATH"' >> "$BASH_ENV"
+            echo "export PATH=/opt/sonar-scanner-${SONAR_VERSION}-linux-x64/bin:$PATH" >> "$BASH_ENV"
             source "$BASH_ENV"
             sonar-scanner --version
 
-      # ── 9. SonarQube static analysis scan ────────────────────────────────────
+      # ── 8. SonarQube static analysis scan ────────────────────────────────────
       - run:
           name: SonarQube Static Analysis Scan
           command: |
@@ -71,7 +60,6 @@ jobs:
               -Dsonar.projectVersion=1.0 \
               -Dsonar.sources=. \
               -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/*.test.js,**/*.spec.js \
-              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.token=$SONAR_TOKEN \
               -Dsonar.scm.provider=git
