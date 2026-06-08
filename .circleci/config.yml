@@ -33,15 +33,15 @@ jobs:
             sudo apt-get install -y openjdk-17-jre-headless
             java -version
 
-      # ── 5. Install sonar-scanner CLI ─────────────────────────────────────────
+      # ── 5. Install sonar-scanner CLI (to home dir — no sudo needed) ──────────
       - run:
           name: Install sonar-scanner
           command: |
             SONAR_VERSION="6.2.1.4610"
             wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_VERSION}-linux-x64.zip" \
               -O /tmp/sonar-scanner.zip
-            unzip -q /tmp/sonar-scanner.zip -d /opt
-            echo "export PATH=/opt/sonar-scanner-${SONAR_VERSION}-linux-x64/bin:$PATH" >> "$BASH_ENV"
+            unzip -q /tmp/sonar-scanner.zip -d ~/
+            echo "export PATH=~/sonar-scanner-${SONAR_VERSION}-linux-x64/bin:$PATH" >> "$BASH_ENV"
             source "$BASH_ENV"
             sonar-scanner --version
 
