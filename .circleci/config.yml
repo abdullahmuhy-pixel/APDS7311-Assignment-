@@ -15,10 +15,15 @@ jobs:
           name: Install frontend dependencies
           command: npm install
 
-      # ── 3. Unit tests ────────────────────────────────────────────────────────
+      # ── 3. Unit tests (skip gracefully if no test script defined) ────────────
       - run:
           name: Run unit tests
-          command: npm test --passWithNoTests || true
+          command: |
+            if node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.test ? 0 : 1)"; then
+              npm test
+            else
+              echo "No test script defined in package.json — skipping."
+            fi
 
       # ── 4. Build frontend (Vite) ─────────────────────────────────────────────
       - run:
@@ -50,7 +55,8 @@ jobs:
           name: SonarQube Static Analysis Scan
           command: |
             sonar-scanner \
-              -Dsonar.projectKey=apds7311-banking \
+              -Dsonar.organization=abdullahmuhy-pixel \
+              -Dsonar.projectKey=abdullahmuhy-pixel_APDS7311-Assignment- \
               -Dsonar.projectName="APDS7311 Banking Portal" \
               -Dsonar.projectVersion=1.0 \
               -Dsonar.sources=. \
