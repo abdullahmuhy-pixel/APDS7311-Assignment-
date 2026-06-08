@@ -13,7 +13,7 @@ jobs:
       # ── 2. Install frontend dependencies ─────────────────────────────────────
       - run:
           name: Install frontend dependencies
-          command: npm install
+          command: npm install --legacy-peer-deps
 
       # ── 3. Unit tests (skip gracefully if no test script defined) ────────────
       - run:
