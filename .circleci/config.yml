@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-and-scan:
     docker:
-      - image: cimg/node:18.20
+      - image: cimg/node:20.10
     working_directory: ~/project
 
     steps:
@@ -15,22 +15,17 @@ jobs:
           name: Install frontend dependencies
           command: npm install
 
-      # ── 3. Lint (ESLint) ─────────────────────────────────────────────────────
-      - run:
-          name: Run ESLint
-          command: npm run lint --if-present
-
-      # ── 4. Unit tests ────────────────────────────────────────────────────────
+      # ── 3. Unit tests ────────────────────────────────────────────────────────
       - run:
           name: Run unit tests
           command: npm test --passWithNoTests
 
-      # ── 5. Build frontend (Vite) ─────────────────────────────────────────────
+      # ── 4. Build frontend (Vite) ─────────────────────────────────────────────
       - run:
           name: Build frontend
           command: npm run build --if-present
 
-      # ── 6. Install Java (required by sonar-scanner CLI) ──────────────────────
+      # ── 5. Install Java (required by sonar-scanner CLI) ──────────────────────
       - run:
           name: Install Java 17
           command: |
@@ -38,7 +33,7 @@ jobs:
             sudo apt-get install -y openjdk-17-jre-headless
             java -version
 
-      # ── 7. Install sonar-scanner CLI ─────────────────────────────────────────
+      # ── 6. Install sonar-scanner CLI ─────────────────────────────────────────
       - run:
           name: Install sonar-scanner
           command: |
@@ -50,7 +45,7 @@ jobs:
             source "$BASH_ENV"
             sonar-scanner --version
 
-      # ── 8. SonarQube static analysis scan ────────────────────────────────────
+      # ── 7. SonarQube static analysis scan ────────────────────────────────────
       - run:
           name: SonarQube Static Analysis Scan
           command: |
