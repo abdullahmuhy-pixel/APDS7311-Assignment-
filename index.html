@@ -1,13 +1,987 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>employee-portal</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>employee-portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #1a2b4a;
+  --navy-dark: #0f1e35;
+  --navy-light: #243557;
+  --blue: #2c4a7c;
+  --blue-accent: #3d6199;
+  --gold: #c8a84b;
+  --green: #2d7a4f;
+  --green-light: #38a169;
+  --red: #c0392b;
+  --text: #1a1a2e;
+  --text-light: #4a5568;
+  --border: #c8d0db;
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --success-bg: #e8f4fd;
+  --success-border: #3d6199;
+}
+
+body {
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 16px 60px;
+}
+
+/* ── PORTAL HEADER ── */
+.portal-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.portal-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.portal-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.portal-subtitle {
+  font-size: 14px;
+  color: var(--text-light);
+  font-style: italic;
+  margin-bottom: 2px;
+}
+
+.portal-divider {
+  width: 100%;
+  max-width: 400px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--navy), transparent);
+  margin: 10px auto 24px;
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 32px 36px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ── NOTICE BOX ── */
+.notice {
+  background: var(--success-bg);
+  border-left: 4px solid var(--success-border);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--navy);
+  line-height: 1.5;
+  text-align: center;
+}
+
+.notice-error {
+  background: #fef2f2;
+  border-left-color: var(--red);
+  color: var(--red);
+}
+
+.notice-warning {
+  color: var(--red);
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+/* ── FORM ── */
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+  border-color: var(--blue-accent);
+  box-shadow: 0 0 0 3px rgba(61,97,153,0.1);
+}
+
+input::placeholder { color: #a0aec0; }
+
+.input-wrap {
+  position: relative;
+  display: flex;
+}
+
+.input-wrap input {
+  border-radius: 4px 0 0 4px;
+  flex: 1;
+}
+
+.show-btn {
+  padding: 10px 14px;
+  background: #f7f8fa;
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+.show-btn:hover { background: #eef0f3; }
+
+.field-error {
+  color: var(--red);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.btn-navy {
+  background: var(--navy);
+  color: var(--white);
+}
+.btn-navy:hover { background: var(--navy-light); }
+
+.btn-green {
+  background: var(--green);
+  color: var(--white);
+}
+.btn-green:hover { background: var(--green-light); }
+
+.btn-black {
+  background: #1a1a1a;
+  color: var(--white);
+  margin-top: 8px;
+}
+.btn-black:hover { background: #333; }
+
+.btn-red {
+  background: var(--red);
+  color: var(--white);
+  padding: 8px 14px;
+  width: auto;
+  font-size: 13px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ── LINK ── */
+.link {
+  display: block;
+  text-align: center;
+  color: var(--blue-accent);
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 14px;
+  text-decoration: underline;
+}
+.link:hover { color: var(--navy); }
+
+/* ── EMPLOYEE DASHBOARD ── */
+.emp-wrap {
+  width: 100%;
+  max-width: 900px;
+}
+
+.emp-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.emp-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.emp-subtitle {
+  font-size: 14px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.emp-divider {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--navy), transparent);
+  margin: 8px 0 16px;
+}
+
+.operator-bar {
+  background: #1a1a1a;
+  color: var(--white);
+  padding: 10px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.operator-bar strong { color: #e2e8f0; letter-spacing: 1px; }
+
+/* ── TRANSACTIONS TABLE ── */
+.txn-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.txn-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+  border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f2f5;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fafbfc; }
+
+.currency-badge {
+  display: inline-block;
+  background: #f0f2f5;
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.swift-badge {
+  display: inline-block;
+  background: #f8f9fa;
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.status-audited {
+  color: var(--green);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.status-sent {
+  color: var(--blue-accent);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.btn-verify {
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-right: 6px;
+  font-family: 'Crimson Pro', Georgia, serif;
+}
+.btn-verify:hover { background: var(--green-light); }
+
+.btn-submit-gw {
+  background: #e2e8f0;
+  color: var(--text-light);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Crimson Pro', Georgia, serif;
+}
+.btn-submit-gw.active {
+  background: var(--blue-accent);
+  color: var(--white);
+  border-color: var(--blue-accent);
+}
+.btn-submit-gw.active:hover { background: var(--blue); }
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-light);
+  font-style: italic;
+  font-size: 15px;
+}
+
+/* ── HOME PAGE ── */
+.home-wrap {
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+}
+
+.home-portal-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all 0.2s;
+}
+
+.home-divider {
+  width: 80%;
+  height: 1px;
+  background: var(--border);
+  margin: 4px auto 16px;
+}
+
+/* Page transitions */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page.active { animation: fadeIn 0.25s ease; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     HOME
+════════════════════════════════════ -->
+<div id="page-home" class="page active home-wrap">
+  <div class="portal-header">
+    <span class="portal-icon">🏛</span>
+    <div class="portal-title">International Banking System</div>
+    <div class="portal-subtitle">APDS7311/w — Secure Payments Portal</div>
+    <div class="portal-divider"></div>
+  </div>
+  <button class="home-portal-btn btn-navy" onclick="goTo('page-customer-login')">
+    🏦 Global Customer E-Banking Terminal
+  </button>
+  <div class="home-divider"></div>
+  <button class="home-portal-btn" style="background:var(--navy-dark);color:#fff;" onclick="goTo('page-employee-login')">
+    🛡 International Bank Internal Payments Portal
+  </button>
+</div>
+
+
+<!-- ════════════════════════════════════
+     CUSTOMER LOGIN
+════════════════════════════════════ -->
+<div id="page-customer-login" class="page">
+  <div class="portal-header">
+    <span class="portal-icon">🏛</span>
+    <div class="portal-title">Global Customer E-Banking Terminal</div>
+    <div class="portal-divider"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Secure Account Access Login</div>
+    <div id="login-msg"></div>
+    <div class="form-group">
+      <label>Account Number:</label>
+      <input type="text" id="login-account" placeholder="Enter account number"/>
+      <div class="field-error" id="login-account-err"></div>
+    </div>
+    <div class="form-group">
+      <label>Password Field:</label>
+      <div class="input-wrap">
+        <input type="password" id="login-password" placeholder="Enter password"/>
+        <button class="show-btn" onclick="togglePwd('login-password',this)">• Show</button>
+      </div>
+      <div class="field-error" id="login-password-err"></div>
+    </div>
+    <button class="btn btn-navy" onclick="handleLogin()">Authenticate Identity</button>
+    <a class="link" onclick="goTo('page-register')">New client terminal access? Register account entry layout here.</a>
+    <a class="link" onclick="goTo('page-reset')">Forgot access credentials? Reset here.</a>
+    <a class="link" onclick="goTo('page-home')" style="color:#999;font-size:13px;">← Return to portal selection</a>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     CUSTOMER REGISTER
+════════════════════════════════════ -->
+<div id="page-register" class="page">
+  <div class="portal-header">
+    <span class="portal-icon">🏛</span>
+    <div class="portal-title">Global Customer E-Banking Terminal</div>
+    <div class="portal-subtitle">Secure Digital Enrollment Framework</div>
+    <div class="portal-divider"></div>
+  </div>
+  <div class="card">
+    <div id="reg-msg"></div>
+    <div class="form-group">
+      <label>Full Legal Name:</label>
+      <input type="text" id="reg-name" placeholder="e.g. Jane Doe"/>
+      <div class="field-error" id="reg-name-err"></div>
+    </div>
+    <div class="form-group">
+      <label>National Identification ID Number:</label>
+      <input type="text" id="reg-id" placeholder="13 digits"/>
+      <div class="field-error" id="reg-id-err"></div>
+    </div>
+    <div class="form-group">
+      <label>Primary Checking Account Number:</label>
+      <input type="text" id="reg-account" placeholder="6-20 digits"/>
+      <div class="field-error" id="reg-account-err"></div>
+    </div>
+    <div class="form-group">
+      <label>Establish Access Password:</label>
+      <div class="input-wrap">
+        <input type="password" id="reg-password" placeholder="Min 8 chars, uppercase, number, symbol"/>
+        <button class="show-btn" onclick="togglePwd('reg-password',this)">• Show</button>
+      </div>
+      <div class="field-error" id="reg-password-err"></div>
+    </div>
+    <button class="btn btn-navy" onclick="handleRegister()">Generate Secure Record Profile</button>
+    <a class="link" onclick="goTo('page-customer-login')">Return back to access window authentication views.</a>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     CUSTOMER RESET PASSWORD
+════════════════════════════════════ -->
+<div id="page-reset" class="page">
+  <div class="portal-header">
+    <span class="portal-icon">🏛</span>
+    <div class="portal-title">Global Customer E-Banking Terminal</div>
+    <div class="portal-subtitle">Identity Verification & Access Restoration</div>
+    <div class="portal-divider"></div>
+  </div>
+  <div class="card">
+    <div id="reset-msg"></div>
+    <div class="form-group">
+      <label>Account Number:</label>
+      <input type="text" id="reset-account" placeholder="Enter account number"/>
+      <div class="field-error" id="reset-account-err"></div>
+    </div>
+    <div class="form-group">
+      <label>National ID Number:</label>
+      <input type="text" id="reset-id" placeholder="13-digit ID number"/>
+      <div class="field-error" id="reset-id-err"></div>
+    </div>
+    <div class="form-group">
+      <label>New Access Password:</label>
+      <div class="input-wrap">
+        <input type="password" id="reset-password" placeholder="Min 8 chars, uppercase, number, symbol"/>
+        <button class="show-btn" onclick="togglePwd('reset-password',this)">• Show</button>
+      </div>
+      <div class="field-error" id="reset-password-err"></div>
+    </div>
+    <button class="btn btn-navy" onclick="handleReset()">Reset Access Credentials</button>
+    <a class="link" onclick="goTo('page-customer-login')">Return back to access window authentication views.</a>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     CUSTOMER PAYMENT
+════════════════════════════════════ -->
+<div id="page-payment" class="page">
+  <div class="portal-header">
+    <span class="portal-icon">🏛</span>
+    <div class="portal-title">Global Customer E-Banking Terminal</div>
+    <div class="portal-divider"></div>
+  </div>
+  <div class="card" style="max-width:560px;margin:0 auto;">
+    <div id="payment-msg"></div>
+    <div class="card-title" style="font-size:22px;margin-bottom:24px;">Execute Outbound SWIFT Clearing Remittance</div>
+    <div class="form-group">
+      <label>Transfer Amount Clearing:</label>
+      <input type="text" id="pay-amount" placeholder="0.00"/>
+      <div class="field-error" id="pay-amount-err"></div>
+    </div>
+    <div class="form-group">
+      <label>Target Currency Valuation Type:</label>
+      <select id="pay-currency">
+        <option>South African Rand (ZAR)</option>
+        <option>United States Dollar (USD)</option>
+        <option>Euro (EUR)</option>
+        <option>British Pound (GBP)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Beneficiary Target SWIFT/BIC Clearance Code:</label>
+      <input type="text" id="pay-swift" placeholder="8 or 11 characters"/>
+      <div class="field-error" id="pay-swift-err"></div>
+    </div>
+    <div class="form-group">
+      <label>Beneficiary Recipient Core Account Number:</label>
+      <input type="text" id="pay-recipient" placeholder="Enter recipient account"/>
+      <div class="field-error" id="pay-recipient-err"></div>
+    </div>
+    <button class="btn btn-green" onclick="handlePayment()">Pay Now</button>
+    <button class="btn btn-black" onclick="handleLogout()">Log Out</button>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     EMPLOYEE LOGIN
+════════════════════════════════════ -->
+<div id="page-employee-login" class="page">
+  <div class="portal-header">
+    <span class="portal-icon">🏛</span>
+    <div class="portal-title">International Bank Internal Payments Portal</div>
+    <div class="portal-subtitle">Operational Classification Tier: Secure Employee Verification Terminal</div>
+    <div class="portal-divider"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Pre-Registered Internal Personnel Login</div>
+    <div class="notice-warning">Notice: Administrative registration forms are strictly prohibited.</div>
+    <div id="emp-login-msg"></div>
+    <div class="form-group">
+      <label>Staff Username Identifier</label>
+      <input type="text" id="emp-username" placeholder="e.g. bank_verifier01"/>
+      <div class="field-error" id="emp-username-err"></div>
+    </div>
+    <div class="form-group">
+      <label>Operational Core Account Number</label>
+      <input type="text" id="emp-account" placeholder="e.g. 9876543210"/>
+      <div class="field-error" id="emp-account-err"></div>
+    </div>
+    <div class="form-group">
+      <label>Encrypted Directory Password</label>
+      <div class="input-wrap">
+        <input type="password" id="emp-password" placeholder="············"/>
+        <button class="show-btn" onclick="togglePwd('emp-password',this)">• Show</button>
+      </div>
+      <div class="field-error" id="emp-password-err"></div>
+    </div>
+    <button class="btn btn-navy" onclick="handleEmpLogin()">Authenticate Session</button>
+    <a class="link" onclick="goTo('page-home')" style="color:#999;font-size:13px;">← Return to portal selection</a>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     EMPLOYEE DASHBOARD
+════════════════════════════════════ -->
+<div id="page-employee-dashboard" class="page">
+  <div class="emp-wrap">
+    <div class="emp-header">
+      <span class="portal-icon">🏛</span>
+      <div class="emp-title">International Bank Internal Payments Portal</div>
+      <div class="emp-subtitle">Operational Classification Tier: Secure Employee Verification Terminal</div>
+      <div class="emp-divider"></div>
+    </div>
+
+    <div id="emp-dash-msg"></div>
+
+    <div class="operator-bar">
+      <span>Active operator: <strong>EMPLOYEE MODE</strong></span>
+      <button class="btn-red" onclick="handleLogout()">Terminate Session</button>
+    </div>
+
+    <div class="txn-card">
+      <div class="txn-card-title">International SWIFT Clearing Ledger Pipeline Queue</div>
+      <div id="txn-table-wrap">
+        <div class="empty-state">No transactions in the pipeline queue.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+const REGEX = {
+  name:     /^[a-zA-Z\s]{2,50}$/,
+  id:       /^\d{13}$/,
+  account:  /^\d{6,20}$/,
+  password: /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+  amount:   /^\d+(\.\d{1,2})?$/,
+  swift:    /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/,
+  username: /^[a-zA-Z0-9_]{3,30}$/,
+};
+
+// In-memory stores
+const users = [];
+const employees = [
+  { username: 'bank_verifier01', account: '9876543210', password: 'Employee@1', name: 'Alice Johnson' },
+  { username: 'emp001',          account: '1234567890', password: 'Employee@1', name: 'Bob Smith'     },
+  { username: 'emp002',          account: '9999888877', password: 'Employee@2', name: 'Carol White'   },
+];
+const transactions = [];
+let txnCounter = 0;
+let currentEmployee = null;
+
+// Simple hash simulation (frontend only — in prod this is bcryptjs server-side)
+async function hashPwd(pwd) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pwd + '_salt_apds7311'));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+function goTo(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function togglePwd(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '• Hide';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '• Show';
+  }
+}
+
+function showMsg(id, text, isError = false) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'notice' + (isError ? ' notice-error' : '');
+  el.textContent = text;
+  el.style.display = text ? 'block' : 'none';
+}
+
+function clearErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = '';
+}
+
+function setErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = msg;
+}
+
+// ════════════════════════════════════════
+// CUSTOMER — REGISTER
+// ════════════════════════════════════════
+async function handleRegister() {
+  const name    = document.getElementById('reg-name').value.trim();
+  const idNum   = document.getElementById('reg-id').value.trim();
+  const account = document.getElementById('reg-account').value.trim();
+  const pwd     = document.getElementById('reg-password').value;
+
+  clearErr('reg-name-err'); clearErr('reg-id-err');
+  clearErr('reg-account-err'); clearErr('reg-password-err');
+
+  let ok = true;
+  if (!REGEX.name.test(name))     { setErr('reg-name-err',    'Name must be 2-50 letters only'); ok=false; }
+  if (!REGEX.id.test(idNum))      { setErr('reg-id-err',      'ID must be exactly 13 digits'); ok=false; }
+  if (!REGEX.account.test(account)){ setErr('reg-account-err','Account must be 6-20 digits'); ok=false; }
+  if (!REGEX.password.test(pwd))  { setErr('reg-password-err','Min 8 chars, uppercase, number & special (@$!%*?&)'); ok=false; }
+  if (!ok) return;
+
+  if (users.find(u => u.account === account)) {
+    showMsg('reg-msg', 'Account number already registered.', true); return;
+  }
+
+  const hashed = await hashPwd(pwd);
+  users.push({ name, idNum, account, password: hashed });
+  showMsg('reg-msg', 'Account successfully created. Redirecting to login...');
+  setTimeout(() => { goTo('page-customer-login'); showMsg('reg-msg',''); }, 1500);
+}
+
+// ════════════════════════════════════════
+// CUSTOMER — LOGIN
+// ════════════════════════════════════════
+async function handleLogin() {
+  const account = document.getElementById('login-account').value.trim();
+  const pwd     = document.getElementById('login-password').value;
+
+  clearErr('login-account-err'); clearErr('login-password-err');
+  showMsg('login-msg', '');
+
+  let ok = true;
+  if (!REGEX.account.test(account)) { setErr('login-account-err','Invalid account number format'); ok=false; }
+  if (!pwd)                          { setErr('login-password-err','Password is required'); ok=false; }
+  if (!ok) return;
+
+  const user = users.find(u => u.account === account);
+  if (!user) { showMsg('login-msg','Invalid account number or password.', true); return; }
+
+  const hashed = await hashPwd(pwd);
+  if (hashed !== user.password) { showMsg('login-msg','Invalid account number or password.', true); return; }
+
+  showMsg('login-msg','Session tokens successfully validated against core directories.');
+  setTimeout(() => { goTo('page-payment'); showMsg('login-msg',''); }, 800);
+}
+
+// ════════════════════════════════════════
+// CUSTOMER — RESET PASSWORD
+// ════════════════════════════════════════
+async function handleReset() {
+  const account = document.getElementById('reset-account').value.trim();
+  const idNum   = document.getElementById('reset-id').value.trim();
+  const newPwd  = document.getElementById('reset-password').value;
+
+  clearErr('reset-account-err'); clearErr('reset-id-err'); clearErr('reset-password-err');
+
+  let ok = true;
+  if (!REGEX.account.test(account)) { setErr('reset-account-err','Invalid account number'); ok=false; }
+  if (!REGEX.id.test(idNum))        { setErr('reset-id-err','ID must be exactly 13 digits'); ok=false; }
+  if (!REGEX.password.test(newPwd)) { setErr('reset-password-err','Min 8 chars, uppercase, number & special'); ok=false; }
+  if (!ok) return;
+
+  const user = users.find(u => u.account === account && u.idNum === idNum);
+  if (!user) { showMsg('reset-msg','Account not found or ID number incorrect.', true); return; }
+
+  user.password = await hashPwd(newPwd);
+  showMsg('reset-msg','Password reset successfully. Redirecting to login...');
+  setTimeout(() => { goTo('page-customer-login'); showMsg('reset-msg',''); }, 1500);
+}
+
+// ════════════════════════════════════════
+// CUSTOMER — PAYMENT
+// ════════════════════════════════════════
+function handlePayment() {
+  const amount    = document.getElementById('pay-amount').value.trim();
+  const swift     = document.getElementById('pay-swift').value.trim().toUpperCase();
+  const recipient = document.getElementById('pay-recipient').value.trim();
+  const currency  = document.getElementById('pay-currency').value;
+
+  clearErr('pay-amount-err'); clearErr('pay-swift-err'); clearErr('pay-recipient-err');
+  showMsg('payment-msg','');
+
+  let ok = true;
+  if (!REGEX.amount.test(amount))    { setErr('pay-amount-err','Invalid amount format'); ok=false; }
+  if (!REGEX.swift.test(swift))      { setErr('pay-swift-err','SWIFT code must be 8 or 11 uppercase characters'); ok=false; }
+  if (!REGEX.account.test(recipient)){ setErr('pay-recipient-err','Recipient account must be 6-20 digits'); ok=false; }
+  if (!ok) return;
+
+  txnCounter++;
+  const cur = currency.match(/\(([A-Z]+)\)/)?.[1] || 'ZAR';
+  transactions.push({
+    id: txnCounter,
+    account: recipient,
+    amount: parseFloat(amount).toFixed(2),
+    currency: cur,
+    swift,
+    status: 'pending',
+  });
+
+  showMsg('payment-msg', `Transaction Dispatched successfully! Queue Ref ID: #${txnCounter}`);
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-swift').value  = '';
+  document.getElementById('pay-recipient').value = '';
+}
+
+// ════════════════════════════════════════
+// EMPLOYEE — LOGIN
+// ════════════════════════════════════════
+async function handleEmpLogin() {
+  const username = document.getElementById('emp-username').value.trim();
+  const account  = document.getElementById('emp-account').value.trim();
+  const pwd      = document.getElementById('emp-password').value;
+
+  clearErr('emp-username-err'); clearErr('emp-account-err'); clearErr('emp-password-err');
+  showMsg('emp-login-msg','');
+
+  let ok = true;
+  if (!REGEX.username.test(username)) { setErr('emp-username-err','Invalid username format'); ok=false; }
+  if (!REGEX.account.test(account))   { setErr('emp-account-err','Invalid account number'); ok=false; }
+  if (!pwd)                            { setErr('emp-password-err','Password is required'); ok=false; }
+  if (!ok) return;
+
+  const emp = employees.find(e => e.username === username && e.account === account);
+  if (!emp || emp.password !== pwd) {
+    showMsg('emp-login-msg','Authentication failed. Invalid credentials.', true); return;
+  }
+
+  currentEmployee = emp;
+  showMsg('emp-dash-msg', `Authenticated: Active audit session opened for ${emp.username}`);
+  renderTransactions();
+  goTo('page-employee-dashboard');
+}
+
+// ════════════════════════════════════════
+// EMPLOYEE — RENDER TRANSACTIONS
+// ════════════════════════════════════════
+function renderTransactions() {
+  const wrap = document.getElementById('txn-table-wrap');
+  if (transactions.length === 0) {
+    wrap.innerHTML = '<div class="empty-state">No transactions in the pipeline queue.</div>';
+    return;
+  }
+
+  let rows = transactions.map(t => `
+    <tr>
+      <td><strong>#${t.id}</strong></td>
+      <td style="font-family:monospace;">${t.account}</td>
+      <td><strong>${t.amount}</strong></td>
+      <td><span class="currency-badge">${t.currency}</span></td>
+      <td><span class="swift-badge">${t.swift}</span></td>
+      <td>${getStatusCell(t)}</td>
+      <td>${getActionCell(t)}</td>
+    </tr>
+  `).join('');
+
+  wrap.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Recipient Account</th>
+          <th>Amount</th>
+          <th>Currency</th>
+          <th>SWIFT Code</th>
+          <th>Audit Status</th>
+          <th>Command</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function getStatusCell(t) {
+  if (t.status === 'submitted') return '<span class="status-audited">✓<br>Audited</span>';
+  if (t.status === 'verified')  return '<span style="color:#b7791f;font-weight:700;">⏳ Verified</span>';
+  return '<span style="color:#718096;font-size:13px;">Pending</span>';
+}
+
+function getActionCell(t) {
+  if (t.status === 'submitted') {
+    return '<span class="status-sent">🚀 Sent to<br>SWIFT</span>';
+  }
+  if (t.status === 'pending') {
+    return `<button class="btn-verify" onclick="verifyTxn(${t.id})">Verify<br>BIC</button>
+            <button class="btn-submit-gw" disabled>Submit<br>Gateway</button>`;
+  }
+  if (t.status === 'verified') {
+    return `<button class="btn-verify" style="background:#718096;cursor:default;" disabled>Verified ✓</button>
+            <button class="btn-submit-gw active" onclick="submitTxn(${t.id})">Submit<br>Gateway</button>`;
+  }
+  return '';
+}
+
+function verifyTxn(id) {
+  const t = transactions.find(x => x.id === id);
+  if (!t) return;
+  if (!REGEX.swift.test(t.swift)) {
+    showMsg('emp-dash-msg', `Error: Invalid SWIFT code for transaction #${id}. Return to portal to fix or reject.`, true);
+    return;
+  }
+  t.status = 'verified';
+  showMsg('emp-dash-msg', `Transaction #${id} BIC code verified. Ready for SWIFT submission.`);
+  renderTransactions();
+}
+
+function submitTxn(id) {
+  const t = transactions.find(x => x.id === id);
+  if (!t) return;
+  t.status = 'submitted';
+  showMsg('emp-dash-msg', 'Transaction payload securely dispatched to SWIFT gateway.');
+  renderTransactions();
+}
+
+function handleLogout() {
+  currentEmployee = null;
+  showMsg('emp-login-msg','');
+  showMsg('login-msg','');
+  goTo('page-home');
+}
+</script>
+</body>
 </html>
