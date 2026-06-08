@@ -1,27 +1,80 @@
 version: 2.1
 
+orbs:
+  node: circleci/node@5.2.0
+
 jobs:
   build-and-scan:
     docker:
-      - image: cimg/node:18.0
+      - image: cimg/node:18.20
+    working_directory: ~/project
+
     steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
       - checkout
+
+      # ── 2. Install frontend dependencies (React/Vite) ────────────────────────
+      - node/install-packages:
+          pkg-manager: npm
+          cache-path: ~/project/node_modules
+          override-ci-command: npm ci
+
+      # ── 3. Install backend dependencies ──────────────────────────────────────
       - run:
-          name: Install dependencies
-          command: npm install
+          name: Install backend dependencies
+          command: |
+            cd backend
+            npm ci
+
+      # ── 4. Lint (ESLint) ─────────────────────────────────────────────────────
+      - run:
+          name: Run ESLint
+          command: npm run lint --if-present
+
+      # ── 5. Unit tests ────────────────────────────────────────────────────────
       - run:
           name: Run unit tests
           command: npm test --passWithNoTests
+
+      # ── 6. Build frontend (Vite) ─────────────────────────────────────────────
       - run:
-          name: SonarQube Scan
+          name: Build frontend
+          command: npm run build
+
+      # ── 7. Install Java (required by sonar-scanner CLI) ──────────────────────
+      - run:
+          name: Install Java 17
           command: |
-            npx sonar-scanner \
+            sudo apt-get update -y
+            sudo apt-get install -y openjdk-17-jre-headless
+            java -version
+
+      # ── 8. Install sonar-scanner CLI ─────────────────────────────────────────
+      - run:
+          name: Install sonar-scanner
+          command: |
+            SONAR_VERSION="6.2.1.4610"
+            wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_VERSION}-linux-x64.zip" \
+              -O /tmp/sonar-scanner.zip
+            unzip -q /tmp/sonar-scanner.zip -d /opt
+            echo 'export PATH="/opt/sonar-scanner-'${SONAR_VERSION}'-linux-x64/bin:$PATH"' >> "$BASH_ENV"
+            source "$BASH_ENV"
+            sonar-scanner --version
+
+      # ── 9. SonarQube static analysis scan ────────────────────────────────────
+      - run:
+          name: SonarQube Static Analysis Scan
+          command: |
+            sonar-scanner \
               -Dsonar.projectKey=apds7311-banking \
               -Dsonar.projectName="APDS7311 Banking Portal" \
-              -Dsonar.sources=. \
-              -Dsonar.exclusions=node_modules/**,build/** \
+              -Dsonar.projectVersion=1.0 \
+              -Dsonar.sources=src,backend \
+              -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**,**/*.test.js,**/*.spec.js \
+              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
               -Dsonar.host.url=$SONAR_HOST_URL \
-              -Dsonar.login=$SONAR_TOKEN
+              -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.scm.provider=git
 
 workflows:
   devsecops:
